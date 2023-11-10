@@ -14,7 +14,7 @@ class ImageDataset(Dataset):
     def __getitem__(self, index):
         # retrieve annotations from stored list
         # TODO: retrieve bounding box labels
-        filename, _, _, _, _, label = self.data[index]
+        filename, box_x1, box_y1, box_x2, box_y2, label = self.data[index]
 
         # get full path of filename
         image_path = os.path.join(config.IMAGES_PATH, label, filename)
@@ -26,6 +26,12 @@ class ImageDataset(Dataset):
 
         # scale bounding box coordinates relative to dimensions of input image
         # TODO: normalize bounding box coordinates in (0, 1)
+        # box_x1 /= w
+        # box_y1 /= h
+        # box_x2 /= w
+        # box_y2 /= h
+        # bbox = torch.tensor([box_x1, box_y1, box_x2, box_y2])
+
 
         # normalize label in (0, 1, 2) and convert to tensor
         label = torch.tensor(config.LABELS.index(label))

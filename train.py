@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 from model.dataset import ImageDataset
 from model.network import SimpleDetector as ObjectDetector
 from model import config
@@ -167,6 +169,7 @@ if __name__ == '__main__':
     plt.figure()
 
     # TODO: build and save matplotlib plot
+    
 
     # save the training plot
     plt.savefig(config.PLOT_PATH)

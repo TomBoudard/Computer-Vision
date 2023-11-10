@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 from model import config
 import sys
 import os
@@ -16,7 +18,7 @@ for path in sys.argv[1:]:
         # loop over CSV file rows (filename, startX, startY, endX, endY, label)
         for row in open(path).read().strip().split("\n"):
             # TODO: read bounding box annotations
-            filename, _, _, _, _, label = row.split(',')
+            filename, box_x1, box_y1, box_x2, box_y2, label = row.split(',')
             filename = os.path.join(config.IMAGES_PATH, label, filename)
             # TODO: add bounding box annotations here
             data.append((filename, None, None, None, None, label))
@@ -25,7 +27,9 @@ for path in sys.argv[1:]:
 
 # loop over images to be tested with our model, with ground truth if available
 # TODO: must read bounding box annotations once added
-for filename, gt_start_x, gt_start_y, gt_end_x, gt_end_y, gt_label in data:
+i = 0
+while i < len(data):
+    filename, gt_start_x, gt_start_y, gt_end_x, gt_end_y, gt_label = data[i]
     # load the image, copy it, swap its colors channels, resize it, and
     # bring its channel dimension forward
     image = cv2.imread(filename)
@@ -71,3 +75,10 @@ for filename, gt_start_x, gt_start_y, gt_end_x, gt_end_y, gt_label in data:
                 closed = cv2.getWindowProperty('Output', cv2.WND_PROP_VISIBLE) < 1
                 if key == 27 or closed:
                     exit(0)
+                elif key in [81, 82]:
+                    i -= 1
+                    i = max(0, i)
+                elif key in [13, 32, 83, 84]:
+                    i += 1
+                else:
+                    key = -1

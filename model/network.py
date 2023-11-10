@@ -48,12 +48,22 @@ class SimpleDetector(nn.Module):
 
         # create regressor path for bounding box coordinates prediction
         # TODO: take inspiration from above without dropouts
+        # self.bbDetector = nn.Sequential(
+        #     nn.Linear(64 * 3 * 3, 32),
+        #     nn.ReLU(),
+        #     nn.Dropout(),
+        #     nn.Linear(32, 16),
+        #     nn.ReLU(),
+        #     nn.Dropout(),
+        #     nn.Linear(16, 4)
+        # )
 
     def forward(self, x):
         # get features from input then run them through the classifier
-        x = self.features(x)
+        feat = self.features(x)
+        classi = self.classifier(feat)
         # TODO: compute and add the bounding box regressor term
-        return self.classifier(x)
+        return classi
 
 # TODO: create a new class based on SimpleDetector to create a deeper model
 
@@ -92,6 +102,7 @@ class ResnetObjectDetector(nn.Module):
     def forward(self, x):
         # pass the inputs through the base model and then obtain
         # predictions from two different branches of the network
-        x = self.features(x)
+        feat = self.features(x)
+        classi = self.classifier(feat)
         # TODO: compute and add the bounding box regressor term
-        return self.classifier(x)
+        return classi

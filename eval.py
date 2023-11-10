@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 from model import config
 import sys
 import os
