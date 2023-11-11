@@ -146,7 +146,7 @@ if __name__ == '__main__':
         print(f"Val loss: {val_loss:.8f}, Val accuracy: {val_acc:.8f}")
 
         # Part1-6: write code to store model with highest accuracy, lowest loss
-        if (prev_val_acc < val_acc) or (prev_val_acc == val_acc and prev_val_loss > val_loss):
+        if (prev_val_acc is None) or (prev_val_acc < val_acc) or (prev_val_acc == val_acc and prev_val_loss > val_loss):
             prev_val_acc = val_acc
             prev_val_loss = val_loss
 
