@@ -111,7 +111,7 @@ if __name__ == '__main__':
             # add the loss to the total training loss so far and
             # calculate the number of correct predictions
             total_loss += batch_loss
-            correct_labels = predict.argmax(1) == labels
+            correct_labels = predict_label.argmax(1) == labels
             correct += correct_labels.type(torch.float).sum().item()
 
         # return sample-level averages of the loss and accuracy
