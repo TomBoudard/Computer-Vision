@@ -57,10 +57,10 @@ while i < len(data):
     # if (gt_label != label):
         # Part3-6:denormalize bounding box from (0,1)x(0,1) to (0,w)x(0,h)
         start_x, start_y, end_x, end_y = predict_bbox[0].tolist()
-        # start_x *= w
-        # start_y *= h
-        # end_x *= w  
-        # end_y *= h
+        start_x *= w
+        start_y *= h
+        end_x *= w  
+        end_y *= h
 
         # draw the ground truth box and class label on the image, if any
         if gt_label is not None:

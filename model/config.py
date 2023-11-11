@@ -34,9 +34,9 @@ BATCH_SIZE = 32
 
 # specify the loss weights
 LABELW = 1.0
-BBOXW = 1.0
+# BBOXW = 1.0
 # with initial weight for loss homogeneity, bounding boxes are inaccurate
-# BBOXW = 1.0e-3
+BBOXW = 1.0e-3
 
 # label table as python list, defaults to ['motorcycle', 'airplane', 'face']
 LABELS = os.listdir(IMAGES_PATH)
