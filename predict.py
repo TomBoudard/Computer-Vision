@@ -29,7 +29,6 @@ for path in sys.argv[1:]:
 # loop over images to be tested with our model, with ground truth if available
 # Part3-6: must read bounding box annotations once added
 i = 0
-print("Start while")
 while i < len(data):
     filename, gt_start_x, gt_start_y, gt_end_x, gt_end_y, gt_label = data[i]
     # load the image, copy it, swap its colors channels, resize it, and
@@ -45,11 +44,9 @@ while i < len(data):
 
     # predict the bounding box of the object along with the class label
     # Part3-2: need to retrieve label AND bbox predictions once added in network
-    print("Start predict")
     predict = model(image)
     predict_label = predict[0]
     predict_bbox = predict[1]
-    print("End predict")
 
     # determine the class label with the largest predicted probability
     predict_label = torch.nn.Softmax(dim=-1)(predict_label)
@@ -57,12 +54,13 @@ while i < len(data):
     label = config.LABELS[most_likely_label]
 
     if True:
+    # if (gt_label != label):
         # Part3-6:denormalize bounding box from (0,1)x(0,1) to (0,w)x(0,h)
         start_x, start_y, end_x, end_y = predict_bbox[0].tolist()
-        start_x *= w
-        start_y *= h
-        end_x *= w  
-        end_y *= h
+        # start_x *= w
+        # start_y *= h
+        # end_x *= w  
+        # end_y *= h
 
         # draw the ground truth box and class label on the image, if any
         if gt_label is not None:
@@ -78,7 +76,6 @@ while i < len(data):
         # Part3-6: display predicted bounding box, don't forget tp denormalize it!
         cv2.rectangle(display, (int(start_x), int(start_y)), (int(end_x), int(end_y)), (0, 255, 0))
 
-        print("Start Output")
         # show the output image
         cv2.imshow("Output", display)
 
