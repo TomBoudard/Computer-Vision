@@ -15,6 +15,7 @@ class ImageDataset(Dataset):
         # retrieve annotations from stored list
         # Part3-3: retrieve bounding box labels
         filename, box_x1, box_y1, box_x2, box_y2, label = self.data[index]
+        box_x1, box_y1, box_x2, box_y2 = int(box_x1), int(box_y1), int(box_x2), int(box_y2)
 
         # get full path of filename
         image_path = os.path.join(config.IMAGES_PATH, label, filename)
