@@ -145,8 +145,8 @@ if __name__ == '__main__':
         print(f"Train loss: {train_loss:.8f}, Train accuracy: {train_acc:.8f}")
         print(f"Val loss: {val_loss:.8f}, Val accuracy: {val_acc:.8f}")
 
-        # TODO: write code to store model with highest accuracy, lowest loss
-        if False:
+        # Part1-6: write code to store model with highest accuracy, lowest loss
+        if (prev_val_acc < val_acc) or (prev_val_acc == val_acc and prev_val_loss > val_loss):
             prev_val_acc = val_acc
             prev_val_loss = val_loss
 
@@ -186,6 +186,8 @@ if __name__ == '__main__':
     plt.title("Accuracy")
     plt.xlabel("epoch")
     plt.ylabel("accuracy")
+
+    plt.tight_layout() # Pour mieux fit les graphs
 
     # save the training plot
     plt.savefig(config.PLOT_PATH)
