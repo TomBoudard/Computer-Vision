@@ -59,7 +59,7 @@ while i < len(data):
     if True:
         # Part3-6:denormalize bounding box from (0,1)x(0,1) to (0,w)x(0,h)
         print(predict_bbox, type(predict_bbox))
-        start_x, start_y, end_x, end_y = predict_bbox.cpu()
+        start_x, start_y, end_x, end_y = predict_bbox[0]
         start_x *= w
         start_y *= h
         end_x *= w
