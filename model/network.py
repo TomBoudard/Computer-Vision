@@ -50,9 +50,9 @@ class SimpleDetector(nn.Module):
         # Part3-1: take inspiration from above without dropouts
         self.bbDetector = nn.Sequential(
             nn.Linear(64 * 3 * 3, 32),
-            nn.ReLU(),
+            # nn.ReLU(),
             nn.Linear(32, 16),
-            nn.ReLU(),
+            # nn.ReLU(),
             nn.Linear(16, 16),
             # nn.Sigmoid(),
             nn.Linear(16, 4)
