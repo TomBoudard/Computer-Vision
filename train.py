@@ -138,7 +138,7 @@ if __name__ == '__main__':
         plots['Training class accuracy'].append(train_acc)
 
         plots['Validation loss'].append(val_loss.cpu())
-        plots['Validation class accuracy'].append(val_acc)
+        plots['Validation class accuracy    '].append(val_acc)
 
         # print the model training and validation information
         print(f"**** EPOCH: {e + 1}/{config.NUM_EPOCHS}")
