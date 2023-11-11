@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 from model.dataset import ImageDataset
-from model.network import DeepDetector as SimpleDetector
+from model.network import SimpleDetector as ObjectDetector
 from model import config
 import torch
 from torch.utils.data import DataLoader
