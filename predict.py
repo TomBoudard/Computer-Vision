@@ -58,12 +58,10 @@ while i < len(data):
 
     if True:
         # Part3-6:denormalize bounding box from (0,1)x(0,1) to (0,w)x(0,h)
-        print(predict_bbox, type(predict_bbox), predict_bbox.tolist(), predict_bbox[0].tolist())
         start_x, start_y, end_x, end_y = predict_bbox[0].tolist()
-        print(start_x, type(start_x))
         start_x *= w
         start_y *= h
-        end_x *= w
+        end_x *= w  
         end_y *= h
 
         # draw the ground truth box and class label on the image, if any
@@ -78,7 +76,7 @@ while i < len(data):
         cv2.putText(display, label, (0, 15),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 0), 2)
         # Part3-6: display predicted bounding box, don't forget tp denormalize it!
-        cv2.rectangle(display, (start_x, start_y), (end_x, end_y), (0, 255, 0))
+        cv2.rectangle(display, (int(start_x), int(start_y)), (int(end_x), int(end_y)), (0, 255, 0))
 
         print("Start Output")
         # show the output image
