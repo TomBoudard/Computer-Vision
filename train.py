@@ -168,8 +168,24 @@ if __name__ == '__main__':
     plt.style.use("ggplot")
     plt.figure()
 
-    # TODO: build and save matplotlib plot
-    
+    # Part1-5: build and save matplotlib plot
+    #Loss
+    plt.subplot(2, 1, 1)
+    plt.plot(plots['Training loss'], label="Training loss")
+    plt.plot(plots["Validation loss"], label="Validation loss")
+    plt.legend()
+    plt.title("Loss")
+    plt.xlabel("epoch")
+    plt.ylabel("loss")
+
+    #Accuracy
+    plt.subplot(2, 1, 2)
+    plt.plot(plots['Training class accuracy'], label="Training class accuracy")
+    plt.plot(plots["Validation class accuracy"], label="Validation accuracy accuracy")
+    plt.legend()
+    plt.title("Accuracy")
+    plt.xlabel("epoch")
+    plt.ylabel("accuracy")
 
     # save the training plot
     plt.savefig(config.PLOT_PATH)
