@@ -82,6 +82,7 @@ if __name__ == '__main__':
     def compute_loss(loader, back_prop=False):
         # initialize the total loss and number of correct predictions
         total_loss, correct = 0, 0
+        total_bbox_loss = 0
 
         # loop over batches of the training set
         for batch in loader:
@@ -111,11 +112,12 @@ if __name__ == '__main__':
             # add the loss to the total training loss so far and
             # calculate the number of correct predictions
             total_loss += batch_loss
+            total_bbox_loss += bbox_loss
             correct_labels = predict_label.argmax(1) == labels
             correct += correct_labels.type(torch.float).sum().item()
 
         # return sample-level averages of the loss and accuracy
-        return total_loss / len(loader.dataset), correct / len(loader.dataset)
+        return total_loss / len(loader.dataset), correct / len(loader.dataset), total_bbox_loss / len(loader.dataset)
 
     # loop over epochs
     print("**** training the network...")
@@ -130,14 +132,14 @@ if __name__ == '__main__':
         # Do not use the returned loss
         # The loss of each batch is computed with a "different network"
         # as the weights are updated per batch
-        _, _ = compute_loss(train_loader, back_prop=True)
+        _, _, _ = compute_loss(train_loader, back_prop=True)
 
         # switch off autograd
         with torch.no_grad():
             # set the model in evaluation mode and compute validation loss
             object_detector.eval()
-            train_loss, train_acc = compute_loss(train_loader)
-            val_loss, val_acc = compute_loss(val_loader)
+            train_loss, train_acc, train_bbox_loss = compute_loss(train_loader)
+            val_loss, val_acc, val_bbox_loss = compute_loss(val_loader)
         
         end_epoch_time = time.time()
 
@@ -153,6 +155,7 @@ if __name__ == '__main__':
         print(f"**** Computation time of the EPOCH {e + 1}: {end_epoch_time - start_epoch_time:.2f}s****")
         print(f"Train loss: {train_loss:.8f}, Train accuracy: {train_acc:.8f}")
         print(f"Val loss: {val_loss:.8f}, Val accuracy: {val_acc:.8f}")
+        print(f"BBox train loss: {train_bbox_loss:.8f}, BBox val loss: {val_bbox_loss:.8f}")
 
         # Part1-6: write code to store model with highest accuracy, lowest loss
         if (prev_val_acc is None) or (prev_val_acc < val_acc) or (prev_val_acc == val_acc and prev_val_loss > val_loss):
