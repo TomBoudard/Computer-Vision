@@ -53,8 +53,9 @@ class SimpleDetector(nn.Module):
             nn.ReLU(),
             nn.Linear(32, 16),
             nn.ReLU(),
-            nn.Linear(16, 4),
-            nn.Sigmoid()
+            nn.Linear(16, 16),
+            nn.Sigmoid(),
+            nn.Linear(16, 4)
         )
 
     def forward(self, x):
