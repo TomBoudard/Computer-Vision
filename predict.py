@@ -56,7 +56,7 @@ while i < len(data):
     most_likely_label = predict_label.argmax(dim=-1).cpu()
     label = config.LABELS[most_likely_label]
 
-    if (gt_label is not None) and (gt_label != label):
+    if True:
         # Part3-6:denormalize bounding box from (0,1)x(0,1) to (0,w)x(0,h)
         start_x, start_y, end_x, end_y = predict_bbox
         start_x *= w
