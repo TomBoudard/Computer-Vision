@@ -47,22 +47,23 @@ class SimpleDetector(nn.Module):
         self.classifier.apply(init_weights)
 
         # create regressor path for bounding box coordinates prediction
-        # TODO: take inspiration from above without dropouts
-        # self.bbDetector = nn.Sequential(
-        #     nn.Linear(64 * 3 * 3, 32),
-        #     nn.ReLU(),
-        #     nn.Linear(32, 16),
-        #     nn.ReLU(),
-        #     nn.Linear(16, 4)
-        # )
+        # Part3-1: take inspiration from above without dropouts
+        self.bbDetector = nn.Sequential(
+            nn.Linear(64 * 3 * 3, 32),
+            nn.ReLU(),
+            nn.Linear(32, 16),
+            nn.ReLU(),
+            nn.Linear(16, 4),
+            nn.Sigmoid()
+        )
 
     def forward(self, x):
         # get features from input then run them through the classifier
         feat = self.features(x)
         classi = self.classifier(feat)
-        # TODO: compute and add the bounding box regressor term
-        # bbox = self.bbDetector(feat)
-        return classi #, bbox
+        # Part3-2: compute and add the bounding box regressor term
+        bbox = self.bbDetector(feat)
+        return classi, bbox
 
 # Part2-1: create a new class based on SimpleDetector to create a deeper model
 class DeepDetector(nn.Module):
@@ -119,7 +120,8 @@ class DeepDetector(nn.Module):
         #     nn.ReLU(),
         #     nn.Linear(32, 16),
         #     nn.ReLU(),
-        #     nn.Linear(16, 4)
+        #     nn.Linear(16, 4),
+        #     nn.Sigmoid()
         # )
 
     def forward(self, x):
@@ -130,7 +132,7 @@ class DeepDetector(nn.Module):
         # bbox = self.bbDetector(feat)
         return classi #, bbox
 
-# TODO: once played with VGG, play with this
+# Part2-3: once played with VGG, play with this
 class ResnetObjectDetector(nn.Module):
     """ Resnet18 based feature extraction layers """
     def __init__(self, nb_classes):
@@ -165,7 +167,8 @@ class ResnetObjectDetector(nn.Module):
         #     nn.ReLU(),
         #     nn.Linear(512, 512),
         #     nn.ReLU(),
-        #     nn.Linear(512, 4)
+        #     nn.Linear(512, 4),
+        #     nn.Sigmoid()
         # )
 
     def forward(self, x):

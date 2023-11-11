@@ -60,11 +60,13 @@ for mode, csv_file in [['train', config.TRAIN_PATH],
         image = image.unsqueeze(0)
 
         # predict the bounding box of the object along with the class label
-        label_predictions = model(image)
+        predict = model(image)
+        predict_label = predict[0]
+        predict_bbox = predict[1]
 
         # determine the class label with the largest predicted probability
-        label_predictions = torch.nn.Softmax(dim=-1)(label_predictions)
-        most_likely_label = label_predictions.argmax(dim=-1).cpu()
+        predict_label = torch.nn.Softmax(dim=-1)(predict_label)
+        most_likely_label = predict_label.argmax(dim=-1).cpu()
         label = config.LABELS[most_likely_label]
 
         # TODO: denormalize bounding box from (0,1)x(0,1) to (0,w)x(0,h)

@@ -42,12 +42,14 @@ while i < len(data):
     image = image.unsqueeze(0)
 
     # predict the bounding box of the object along with the class label
-    # TODO: need to retrieve label AND bbox predictions once added in network
-    label_predictions = model(image)
+    # Part3-2: need to retrieve label AND bbox predictions once added in network
+    predict = model(image)
+    predict_label = predict[0]
+    predict_bbox = predict[1]
 
     # determine the class label with the largest predicted probability
-    label_predictions = torch.nn.Softmax(dim=-1)(label_predictions)
-    most_likely_label = label_predictions.argmax(dim=-1).cpu()
+    predict_label = torch.nn.Softmax(dim=-1)(predict_label)
+    most_likely_label = predict_label.argmax(dim=-1).cpu()
     label = config.LABELS[most_likely_label]
 
     if (gt_label is not None):

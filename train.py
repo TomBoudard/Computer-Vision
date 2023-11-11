@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 from model.dataset import ImageDataset
-from model.network import DeepDetector as ObjectDetector
+from model.network import DeepDetector as SimpleDetector
 from model import config
 import torch
 from torch.utils.data import DataLoader
@@ -86,15 +86,20 @@ if __name__ == '__main__':
         # loop over batches of the training set
         for batch in loader:
             # send the inputs and training annotations to the device
-            # TODO: modify line below to get bbox data
-            images, labels = [datum.to(config.DEVICE) for datum in batch]
+            # Part3-3: modify line below to get bbox data
+            images, labels, bbox = [datum.to(config.DEVICE) for datum in batch]
 
             # perform a forward pass and calculate the training loss
+            # Part3-2: modify line below to get bbox data
             predict = object_detector(images)
+            predict_label = predict[0]
+            predict_bbox = predict[1]
 
-            # TODO: add loss term for bounding boxes
-            bbox_loss = 0
-            class_loss = fun.cross_entropy(predict, labels, reduction="sum")
+            # Part3-4: add loss term for bounding boxes
+            # class_loss = 0
+            class_loss = fun.cross_entropy(predict_label, labels, reduction="sum")
+            # bbox_loss = 0
+            bbox_loss = fun.cross_entropy(predict_bbox, bbox, reduction="sum")
             batch_loss = config.BBOXW * bbox_loss + config.LABELW * class_loss
 
             # zero out the gradients, perform backprop & update the weights
@@ -118,6 +123,7 @@ if __name__ == '__main__':
     prev_val_loss = None
     start_time = time.time()
     for e in range(config.NUM_EPOCHS):
+        start_epoch_time = time.time()
         # set model in training mode & backpropagate train loss for all batches
         object_detector.train()
 
@@ -132,16 +138,19 @@ if __name__ == '__main__':
             object_detector.eval()
             train_loss, train_acc = compute_loss(train_loader)
             val_loss, val_acc = compute_loss(val_loader)
+        
+        end_epoch_time = time.time()
 
         # update our training history
         plots['Training loss'].append(train_loss.cpu())
         plots['Training class accuracy'].append(train_acc)
 
         plots['Validation loss'].append(val_loss.cpu())
-        plots['Validation class accuracy    '].append(val_acc)
+        plots['Validation class accuracy'].append(val_acc)
 
         # print the model training and validation information
         print(f"**** EPOCH: {e + 1}/{config.NUM_EPOCHS}")
+        print(f"**** Computation time of the EPOCH {e + 1}: {end_epoch_time - start_epoch_time:.2f}s****")
         print(f"Train loss: {train_loss:.8f}, Train accuracy: {train_acc:.8f}")
         print(f"Val loss: {val_loss:.8f}, Val accuracy: {val_acc:.8f}")
 
