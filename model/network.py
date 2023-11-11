@@ -54,7 +54,7 @@ class SimpleDetector(nn.Module):
             nn.Linear(32, 16),
             nn.ReLU(),
             nn.Linear(16, 16),
-            nn.Sigmoid(),
+            # nn.Sigmoid(),
             nn.Linear(16, 4)
         )
 
