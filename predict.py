@@ -17,16 +17,17 @@ for path in sys.argv[1:]:
     if path.endswith('.csv'):
         # loop over CSV file rows (filename, startX, startY, endX, endY, label)
         for row in open(path).read().strip().split("\n"):
-            # TODO: read bounding box annotations
+            # Part3-6: read bounding box annotations
             filename, box_x1, box_y1, box_x2, box_y2, label = row.split(',')
+            box_x1, box_y1, box_x2, box_y2 = int(box_x1), int(box_y1), int(box_x2), int(box_y2)
             filename = os.path.join(config.IMAGES_PATH, label, filename)
-            # TODO: add bounding box annotations here
-            data.append((filename, None, None, None, None, label))
+            # Part3-6: add bounding box annotations here
+            data.append((filename, box_x1, box_y1, box_x2, box_y2, label))
     else:
         data.append((path, None, None, None, None, None))
 
 # loop over images to be tested with our model, with ground truth if available
-# TODO: must read bounding box annotations once added
+# Part3-6: must read bounding box annotations once added
 i = 0
 while i < len(data):
     filename, gt_start_x, gt_start_y, gt_end_x, gt_end_y, gt_label = data[i]
@@ -52,35 +53,42 @@ while i < len(data):
     most_likely_label = predict_label.argmax(dim=-1).cpu()
     label = config.LABELS[most_likely_label]
 
-    if (gt_label is not None):
-        if (gt_label != label):
-            # TODO:denormalize bounding box from (0,1)x(0,1) to (0,w)x(0,h)
+    if (gt_label is not None) and (gt_label != label):
+        # Part3-6:denormalize bounding box from (0,1)x(0,1) to (0,w)x(0,h)
+        start_x, start_y, end_x, end_y = predict_bbox
+        start_x *= w
+        start_y *= h
+        end_x *= w
+        end_y *= h
 
-            # draw the ground truth box and class label on the image, if any
-            if gt_label is not None:
-                cv2.putText(display, 'gt ' + gt_label, (0, h - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255, 0,  0), 2)
-                # TODO: display ground truth bounding box in blue
+        # draw the ground truth box and class label on the image, if any
+        if gt_label is not None:
+            cv2.putText(display, 'gt ' + gt_label, (0, h - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255, 0,  0), 2)
+        # Part3-6: display ground truth bounding box in blue
+        if gt_start_x is not None:
+            cv2.rectangle(display, (gt_start_x, gt_start_y), (gt_end_x, gt_end_y), (255, 0,  0))
 
-            # draw the predicted bounding box and class label on the image
-            cv2.putText(display, label, (0, 15),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 0), 2)
-            # TODO: display predicted bounding box, don't forget tp denormalize it!
+        # draw the predicted bounding box and class label on the image
+        cv2.putText(display, label, (0, 15),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 0), 2)
+        # Part3-6: display predicted bounding box, don't forget tp denormalize it!
+        cv2.rectangle(display, (start_x, start_y), (end_x, end_y), (0, 255, 0))
 
-            # show the output image
-            cv2.imshow("Output", display)
+        # show the output image
+        cv2.imshow("Output", display)
 
-            # exit on escape key or window close
-            key = -1
-            while key == -1:
-                key = cv2.waitKey(100)
-                closed = cv2.getWindowProperty('Output', cv2.WND_PROP_VISIBLE) < 1
-                if key == 27 or closed:
-                    exit(0)
-                elif key in [81, 82]:
-                    i -= 1
-                    i = max(0, i)
-                elif key in [13, 32, 83, 84]:
-                    i += 1
-                else:
-                    key = -1
+        # exit on escape key or window close
+        key = -1
+        while key == -1:
+            key = cv2.waitKey(100)
+            closed = cv2.getWindowProperty('Output', cv2.WND_PROP_VISIBLE) < 1
+            if key == 27 or closed:
+                exit(0)
+            elif key in [81, 82]:
+                i -= 1
+                i = max(0, i)
+            elif key in [13, 32, 83, 84]:
+                i += 1
+            else:
+                key = -1
