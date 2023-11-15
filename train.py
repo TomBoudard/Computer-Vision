@@ -100,7 +100,8 @@ if __name__ == '__main__':
             # class_loss = 0
             class_loss = fun.cross_entropy(predict_label, labels, reduction="sum")
             # bbox_loss = 0
-            bbox_loss = fun.cross_entropy(predict_bbox, bbox, reduction="sum")
+            bbox_loss = fun.mse_loss(predict_bbox, bbox, reduction='sum')
+            # bbox_loss = fun.l1_loss(predict_bbox, bbox, reduction='sum')
             batch_loss = config.BBOXW * bbox_loss + config.LABELW * class_loss
 
             # zero out the gradients, perform backprop & update the weights

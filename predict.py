@@ -53,43 +53,47 @@ while i < len(data):
     most_likely_label = predict_label.argmax(dim=-1).cpu()
     label = config.LABELS[most_likely_label]
 
-    if True:
-    # if (gt_label != label):
-        # Part3-6:denormalize bounding box from (0,1)x(0,1) to (0,w)x(0,h)
-        start_x, start_y, end_x, end_y = predict_bbox[0].tolist()
-        start_x *= w
-        start_y *= h
-        end_x *= w  
-        end_y *= h
+    if(gt_label != None):
+        if (gt_label != label):
+            # Part3-6:denormalize bounding box from (0,1)x(0,1) to (0,w)x(0,h)
+            start_x, start_y, end_x, end_y = predict_bbox[0].tolist()
+            start_x *= w
+            start_y *= h
+            end_x *= w  
+            end_y *= h
 
-        # draw the ground truth box and class label on the image, if any
-        if gt_label is not None:
-            cv2.putText(display, 'gt ' + gt_label, (0, h - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255, 0,  0), 2)
-        # Part3-6: display ground truth bounding box in blue
-        if gt_start_x is not None:
-            cv2.rectangle(display, (gt_start_x, gt_start_y), (gt_end_x, gt_end_y), (255, 0,  0))
+            # draw the ground truth box and class label on the image, if any
+            if gt_label is not None:
+                cv2.putText(display, 'gt ' + gt_label, (0, h - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255, 0,  0), 2)
+            # Part3-6: display ground truth bounding box in blue
+            if gt_start_x is not None:
+                cv2.rectangle(display, (gt_start_x, gt_start_y), (gt_end_x, gt_end_y), (255, 0,  0))
 
-        # draw the predicted bounding box and class label on the image
-        cv2.putText(display, label, (0, 15),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 0), 2)
-        # Part3-6: display predicted bounding box, don't forget tp denormalize it!
-        cv2.rectangle(display, (int(start_x), int(start_y)), (int(end_x), int(end_y)), (0, 255, 0))
+            # draw the predicted bounding box and class label on the image
+            cv2.putText(display, label, (0, 15),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 0), 2)
+            # Part3-6: display predicted bounding box, don't forget tp denormalize it!
+            cv2.rectangle(display, (int(start_x), int(start_y)), (int(end_x), int(end_y)), (0, 255, 0))
 
-        # show the output image
-        cv2.imshow("Output", display)
+            # show the output image
+            cv2.imshow("Output", display)
 
-        # exit on escape key or window close
-        key = -1
-        while key == -1:
-            key = cv2.waitKey(100)
-            closed = cv2.getWindowProperty('Output', cv2.WND_PROP_VISIBLE) < 1
-            if key == 27 or closed:
-                exit(0)
-            elif key in [81, 82]:
-                i -= 1
-                i = max(0, i)
-            elif key in [13, 32, 83, 84]:
-                i += 1
-            else:
-                key = -1
+            # exit on escape key or window close
+            key = -1
+            while key == -1:
+                key = cv2.waitKey(100)
+                closed = cv2.getWindowProperty('Output', cv2.WND_PROP_VISIBLE) < 1
+                if key == 27 or closed:
+                    exit(0)
+                elif key in [81, 82]:
+                    i -= 1
+                    i = max(0, i)
+                elif key in [13, 32, 83, 84]:
+                    i += 1
+                else:
+                    key = -1
+        else:
+            i += 1
+    else:
+        i += 1
