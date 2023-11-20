@@ -182,23 +182,26 @@ if __name__ == '__main__':
     plt.figure()
 
     # Part1-5: build and save matplotlib plot
+    x = [e+1 for e in range(config.NUM_EPOCHS)]
     #Loss
     plt.subplot(2, 1, 1)
-    plt.plot(plots['Training loss'], label="Training loss")
-    plt.plot(plots["Validation loss"], label="Validation loss")
+    plt.plot(x, plots['Training loss'], label="Training loss")
+    plt.plot(x, plots["Validation loss"], label="Validation loss")
     plt.legend()
     plt.title("Loss")
     plt.xlabel("epoch")
     plt.ylabel("loss")
+    plt.xticks(x[::10])
 
     #Accuracy
     plt.subplot(2, 1, 2)
-    plt.plot(plots['Training class accuracy'], label="Training class accuracy")
-    plt.plot(plots["Validation class accuracy"], label="Validation accuracy accuracy")
+    plt.plot(x, plots['Training class accuracy'], label="Training class accuracy")
+    plt.plot(x, plots["Validation class accuracy"], label="Validation class accuracy")
     plt.legend()
     plt.title("Accuracy")
     plt.xlabel("epoch")
     plt.ylabel("accuracy")
+    plt.xticks(x[::10])
 
     plt.tight_layout() # Pour mieux fit les graphs
 

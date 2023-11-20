@@ -16,16 +16,32 @@ def is_image_file(filename):
     image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp']
     return any(filename.lower().endswith(ext) for ext in image_extensions)
 
+arg_list = sys.argv[1:]
+
+directories = False
+showAll = True
+i = 0
+while i < len(arg_list):
+    mot = arg_list[i]
+    if mot == "-d":
+        directories = True
+        arg_list.pop(i)
+    elif mot == "-f":
+        showAll = False
+        arg_list.pop(i)
+    else:
+        i += 1
+
 data = []
-if (sys.argv[1] == "-d"):
+if directories:
     object_list = []
-    for path in sys.argv[2:]:
+    for path in arg_list:
         dir_content = os.listdir(path)
         for elt in dir_content:
             if (is_image_file(elt)):
                 object_list.append(os.path.join(path, elt))
 else:
-    object_list = sys.argv[1:]
+    object_list = arg_list
 
 for path in object_list:
     if path.endswith('.csv'):
@@ -67,7 +83,7 @@ while i < len(data):
     most_likely_label = predict_label.argmax(dim=-1).cpu()
     label = config.LABELS[most_likely_label]
 
-    if (gt_label != label or gt_label == None):
+    if (showAll or gt_label != label):
         # Part3-6:denormalize bounding box from (0,1)x(0,1) to (0,w)x(0,h)
         start_x, start_y, end_x, end_y = predict_bbox[0].tolist()
         start_x *= w
@@ -81,13 +97,14 @@ while i < len(data):
                         cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255, 0,  0), 2)
         # Part3-6: display ground truth bounding box in blue
         if gt_start_x is not None:
-            cv2.rectangle(display, (gt_start_x, gt_start_y), (gt_end_x, gt_end_y), (255, 0,  0))
+            ...
+            # cv2.rectangle(display, (gt_start_x, gt_start_y), (gt_end_x, gt_end_y), (255, 0,  0))
 
         # draw the predicted bounding box and class label on the image
         cv2.putText(display, label, (0, 15),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 0), 2)
         # Part3-6: display predicted bounding box, don't forget tp denormalize it!
-        cv2.rectangle(display, (int(start_x), int(start_y)), (int(end_x), int(end_y)), (0, 255, 0))
+        # cv2.rectangle(display, (int(start_x), int(start_y)), (int(end_x), int(end_y)), (0, 255, 0))
 
         # show the output image
         cv2.imshow("Output", display)
