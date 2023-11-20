@@ -35,7 +35,7 @@ class SimpleDetector(nn.Module):
         # TODO: play with dimensions of this network and compare
         self.classifier = nn.Sequential(
             # dimension = 64 [nb features per map pixel] x 3x3 [nb_map_pixels]
-            # 3 = ImageNet_image_res/(maxpool_stride^#maxpool_layers) = 224/4^3
+            # 3 = ImageNet_image_res/(maxpool_stride^maxpool_layers) = 224/4^3
             nn.Linear(64 * 3 * 3, 32),
             nn.ReLU(),
             nn.Dropout(),

@@ -191,7 +191,7 @@ if __name__ == '__main__':
     plt.title("Loss")
     plt.xlabel("epoch")
     plt.ylabel("loss")
-    plt.xticks(x[::10])
+    plt.xticks(x)
 
     #Accuracy
     plt.subplot(2, 1, 2)
@@ -201,7 +201,7 @@ if __name__ == '__main__':
     plt.title("Accuracy")
     plt.xlabel("epoch")
     plt.ylabel("accuracy")
-    plt.xticks(x[::10])
+    plt.xticks(x)
 
     plt.tight_layout() # Pour mieux fit les graphs
 
