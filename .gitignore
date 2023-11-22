@@ -1,3 +1,4 @@
 .gitignore
 output/*
+datasGuess/
 model/__pycache__

@@ -108,6 +108,11 @@ while i < len(data):
 
         # show the output image
         cv2.imshow("Output", display)
+        # name = filename.split("/")[-1]
+        # folder = filename.split("/")[-2]
+        # print("datasGuess/" + name)
+        # cv2.imwrite("datasGuess/" + folder + "/" + name, display)
+        # i += 1
 
         # exit on escape key or window close
         key = -1
