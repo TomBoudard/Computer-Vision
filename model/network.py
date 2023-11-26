@@ -141,41 +141,41 @@ class VGG11Detector(nn.Module):
             nn.Conv2d(3, 64, kernel_size=(3, 3), padding=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=1, stride=1),
+            nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Conv2d(64, 128, kernel_size=(3, 3), padding=2),
             nn.BatchNorm2d(128),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=1, stride=1),
-            nn.Conv2d(128, 256, kernel_size=(3, 3), padding=2),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.Conv2d(128, 256, kernel_size=(3, 3), padding=1),
             nn.BatchNorm2d(256),
             nn.ReLU(),
-            nn.Conv2d(256, 256, kernel_size=(3, 3), padding=2),
+            nn.Conv2d(256, 256, kernel_size=(3, 3), padding=1),
             nn.BatchNorm2d(256),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=1, stride=1),
-            nn.Conv2d(256, 512, kernel_size=(3, 3), padding=2),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.Conv2d(256, 512, kernel_size=(3, 3), padding=1),
             nn.BatchNorm2d(512),
             nn.ReLU(),
-            nn.Conv2d(512, 512, kernel_size=(3, 3), padding=2),
+            nn.Conv2d(512, 512, kernel_size=(3, 3), padding=1),
             nn.BatchNorm2d(512),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=1, stride=1),
-            nn.Conv2d(512, 512, kernel_size=(3, 3), padding=2),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.Conv2d(512, 512, kernel_size=(3, 3), padding=1),
             nn.BatchNorm2d(512),
             nn.ReLU(),
-            nn.Conv2d(512, 512, kernel_size=(3, 3), padding=2),
+            nn.Conv2d(512, 512, kernel_size=(3, 3), padding=1),
             nn.BatchNorm2d(512),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=1, stride=1),
+            nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Flatten()
         )
         self.features.apply(init_weights)
 
         # create classifier path for class label prediction
         self.classifier = nn.Sequential(
-            # dimension = 512 [nb features per map pixel] x 224x224 [nb_map_pixels]
-            # 224 = ImageNet_image_res/(maxpool_stride^maxpool_layers) = 224/1^5
-            nn.Linear(512 * 224 * 224, 512),
+            # dimension = 512 [nb features per map pixel] x 7x7 [nb_map_pixels]
+            # 7 = ImageNet_image_res/(maxpool_stride^maxpool_layers) = 224/2^5
+            nn.Linear(512 * 7 * 7, 512),
             nn.ReLU(),
             nn.Dropout(),
             nn.Linear(512, 512),
@@ -188,11 +188,11 @@ class VGG11Detector(nn.Module):
         # create regressor path for bounding box coordinates prediction
         # TODO: take inspiration from above without dropouts
         self.bbDetector = nn.Sequential(
-            nn.Linear(512 * 224 * 224, 512),
+            nn.Linear(512 * 7 * 7, 512),
             nn.ReLU(),
             nn.Linear(512, 512),
             nn.ReLU(),
-            nn.Linear(256, 4),
+            nn.Linear(512, 4),
             nn.Sigmoid()
         )
 
@@ -212,7 +212,7 @@ class ResnetObjectDetector(nn.Module):
         super().__init__()
         # copy resnet up to the last conv layer prior to fc layers, and flatten
         # TODO: add pretrained=True to get pretrained coefficients: what effect?
-        features = list(resnet18(pretrained=True).children())[:9]
+        features = list(resnet18(pretrained=False).children())[:9]
         self.features = nn.Sequential(*features, nn.Flatten())
 
         # TODO: first freeze these layers, then comment this loop to
