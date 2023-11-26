@@ -124,6 +124,7 @@ if __name__ == '__main__':
     print("**** training the network...")
     prev_val_acc = None
     prev_val_loss = None
+    fileDatas = open("data.txt", "w")
     start_time = time.time()
     for e in range(config.NUM_EPOCHS):
         start_epoch_time = time.time()
@@ -169,6 +170,20 @@ if __name__ == '__main__':
             # one needs to explicitly set the eval mode before saving
             object_detector.eval()
             torch.save(object_detector, config.BEST_MODEL_PATH)
+
+        #Write epoch datas
+        fileDatas.write(str(plots['Training loss'][-1]))
+        fileDatas.write(" ")
+        fileDatas.write(str(plots['Training class accuracy'][-1]))
+        fileDatas.write(" ")
+        fileDatas.write(str(plots['Training loss'][-1]))
+        fileDatas.write(" ")
+        fileDatas.write(str(plots['Training class accuracy'][-1]))
+        fileDatas.write(" ")
+        fileDatas.write(str(end_epoch_time-start_epoch_time))
+        fileDatas.write(" ")
+        fileDatas.write(str(start_time-time.time()))
+        fileDatas.write("\n")
 
     print("**** saving LAST object detector model...")
     object_detector.eval()
