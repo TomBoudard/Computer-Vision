@@ -124,6 +124,7 @@ if __name__ == '__main__':
     print("**** training the network...")
     prev_val_acc = None
     prev_val_loss = None
+    fileDatas = open("data.txt", "w")
     start_time = time.time()
     for e in range(config.NUM_EPOCHS):
         start_epoch_time = time.time()
@@ -146,9 +147,11 @@ if __name__ == '__main__':
 
         # update our training history
         plots['Training loss'].append(train_loss.cpu())
+        plots['Training bbox loss'].append(train_bbox_loss.cpu())
         plots['Training class accuracy'].append(train_acc)
 
         plots['Validation loss'].append(val_loss.cpu())
+        plots['Validation bbox loss'].append(val_bbox_loss.cpu())
         plots['Validation class accuracy'].append(val_acc)
 
         # print the model training and validation information
@@ -170,6 +173,20 @@ if __name__ == '__main__':
             object_detector.eval()
             torch.save(object_detector, config.BEST_MODEL_PATH)
 
+        #Write epoch datas
+        fileDatas.write(str(plots['Training loss'][-1]))
+        fileDatas.write(" ")
+        fileDatas.write(str(plots['Training class accuracy'][-1]))
+        fileDatas.write(" ")
+        fileDatas.write(str(plots['Validation loss'][-1]))
+        fileDatas.write(" ")
+        fileDatas.write(str(plots['Validation class accuracy'][-1]))
+        fileDatas.write(" ")
+        fileDatas.write(str(end_epoch_time-start_epoch_time))
+        fileDatas.write(" ")
+        fileDatas.write(str(time.time()-start_time))
+        fileDatas.write("\n")
+
     print("**** saving LAST object detector model...")
     object_detector.eval()
     torch.save(object_detector, config.LAST_MODEL_PATH)
@@ -184,9 +201,11 @@ if __name__ == '__main__':
     # Part1-5: build and save matplotlib plot
     x = [e+1 for e in range(config.NUM_EPOCHS)]
     #Loss
-    plt.subplot(2, 1, 1)
+    # plt.subplot(2, 1, 1)
     plt.plot(x, plots['Training loss'], label="Training loss")
     plt.plot(x, plots["Validation loss"], label="Validation loss")
+    plt.plot(x, plots["Training bbox loss"], label="Training bbox loss", color="C0", linestyle="--")
+    plt.plot(x, plots["Validation bbox loss"], label="Validation bbox loss", color="C1", linestyle="--")
     plt.legend()
     plt.title("Loss")
     plt.xlabel("epoch")
@@ -194,14 +213,14 @@ if __name__ == '__main__':
     plt.xticks(x)
 
     #Accuracy
-    plt.subplot(2, 1, 2)
-    plt.plot(x, plots['Training class accuracy'], label="Training class accuracy")
-    plt.plot(x, plots["Validation class accuracy"], label="Validation class accuracy")
-    plt.legend()
-    plt.title("Accuracy")
-    plt.xlabel("epoch")
-    plt.ylabel("accuracy")
-    plt.xticks(x)
+    # plt.subplot(2, 1, 2)
+    # plt.plot(x, plots['Training class accuracy'], label="Training class accuracy")
+    # plt.plot(x, plots["Validation class accuracy"], label="Validation class accuracy")
+    # plt.legend()
+    # plt.title("Accuracy")
+    # plt.xlabel("epoch")
+    # plt.ylabel("accuracy")
+    # plt.xticks(x)
 
     plt.tight_layout() # Pour mieux fit les graphs
 
