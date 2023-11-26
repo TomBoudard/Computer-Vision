@@ -124,7 +124,7 @@ if __name__ == '__main__':
     print("**** training the network...")
     prev_val_acc = None
     prev_val_loss = None
-    fileDatas = open("data.txt", "w")
+    fileDatas = open("dataSimple.txt", "w")
     start_time = time.time()
     for e in range(config.NUM_EPOCHS):
         start_epoch_time = time.time()
