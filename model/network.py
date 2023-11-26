@@ -218,8 +218,8 @@ class ResnetObjectDetector(nn.Module):
         # TODO: first freeze these layers, then comment this loop to
         #  include them in the training
         # freeze all ResNet18 layers during the training process
-        for param in self.features.parameters():
-            param.requires_grad = False
+        # for param in self.features.parameters():
+        #     param.requires_grad = False
 
         # create classifier path for class label prediction
         # TODO: play with dimensions below and see how it compares
