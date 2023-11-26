@@ -97,14 +97,13 @@ while i < len(data):
                         cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255, 0,  0), 2)
         # Part3-6: display ground truth bounding box in blue
         if gt_start_x is not None:
-            ...
-            # cv2.rectangle(display, (gt_start_x, gt_start_y), (gt_end_x, gt_end_y), (255, 0,  0))
+            cv2.rectangle(display, (gt_start_x, gt_start_y), (gt_end_x, gt_end_y), (255, 0,  0))
 
         # draw the predicted bounding box and class label on the image
         cv2.putText(display, label, (0, 15),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 0), 2)
         # Part3-6: display predicted bounding box, don't forget tp denormalize it!
-        # cv2.rectangle(display, (int(start_x), int(start_y)), (int(end_x), int(end_y)), (0, 255, 0))
+        cv2.rectangle(display, (int(start_x), int(start_y)), (int(end_x), int(end_y)), (0, 255, 0))
 
         # show the output image
         cv2.imshow("Output", display)
