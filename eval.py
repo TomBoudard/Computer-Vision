@@ -95,15 +95,15 @@ for mode, csv_file in [['train', config.TRAIN_PATH],
         intersect_area = max(0, (intersect_end_x-intersect_start_x)) * max(0, (intersect_end_y - intersect_start_y))
         overlapPercent = intersect_area / (gt_area + area - intersect_area)
         results_bbox[mode]['all'].append(overlapPercent)
-        if label == gt_label:
-            results_bbox[mode]['all' + "correct"].append(overlapPercent)
-        else:
-            results_bbox[mode]['all' + "wrong"].append(overlapPercent)
+        # if label == gt_label:
+        #     results_bbox[mode]['all' + "correct"].append(overlapPercent)
+        # else:
+        #     results_bbox[mode]['all' + "wrong"].append(overlapPercent)
         results_bbox[mode][gt_label].append(overlapPercent)
-        if label == gt_label:
-            results_bbox[mode][gt_label + "correct"].append(overlapPercent)
-        else:
-            results_bbox[mode][gt_label + "wrong"].append(overlapPercent)
+        # if label == gt_label:
+        #     results_bbox[mode][gt_label + "correct"].append(overlapPercent)
+        # else:
+        #     results_bbox[mode][gt_label + "wrong"].append(overlapPercent)
 
         if label != gt_label:
             print(f"\tFailure at {filename}")
@@ -116,22 +116,22 @@ for mode in ['train', 'validation', 'test']:
           f"{numpy.mean(numpy.array(results_labels[mode]['all']))}")
     # Part3-2: display bounding box metrics
     print(f"\tMean bbox accuracy for all labels: "
-          f"{numpy.mean(numpy.array(results_bbox[mode]['all']))}")
-    print(f'\n\tMean bbox accuracy for all labels correclty guessed: '
-            f'{numpy.mean(numpy.array(results_bbox[mode]["all" + "correct"]))}')
-    print(f'\n\tMean bbox accuracy for all labels wrongly guessed: '
-            f'{numpy.mean(numpy.array(results_bbox[mode]["all" + "wrong"]))}')
+          f"\033[91m{numpy.mean(numpy.array(results_bbox[mode]['all']))}\033[0m")
+    # print(f'\n\tMean bbox accuracy for all labels correclty guessed: '
+    #         f'{numpy.mean(numpy.array(results_bbox[mode]["all" + "correct"]))}')
+    # print(f'\n\tMean bbox accuracy for all labels wrongly guessed: '
+    #         f'{numpy.mean(numpy.array(results_bbox[mode]["all" + "wrong"]))}')
 
     for label_str in config.LABELS:
-        print(f'\n\tMean accuracy for label {label_str}: '
+        print(f'\tMean accuracy for label {label_str}: '
               f'{numpy.mean(numpy.array(results_labels[mode][label_str]))}')
         print(f'\t\t {numpy.sum(results_labels[mode][label_str])} over '
               f'{len(results_labels[mode][label_str])} samples')
         # Part3-2: display bounding box metrics
-        print(f'\n\tMean bbox accuracy for label {label_str}: '
-              f'{numpy.mean(numpy.array(results_bbox[mode][label_str]))}')
-        print(f'\n\tMean bbox accuracy for label {label_str} correclty guessed: '
-              f'{numpy.mean(numpy.array(results_bbox[mode][label_str + "correct"]))}')
-        print(f'\n\tMean bbox accuracy for label {label_str} wrongly guessed: '
-              f'{numpy.mean(numpy.array(results_bbox[mode][label_str + "wrong"]))}')
+        print(f'\tMean bbox accuracy for label {label_str}: '
+              f'\033[92m{numpy.mean(numpy.array(results_bbox[mode][label_str]))}\033[0m')
+        # print(f'\n\tMean bbox accuracy for label {label_str} correclty guessed: '
+        #       f'{numpy.mean(numpy.array(results_bbox[mode][label_str + "correct"]))}')
+        # print(f'\n\tMean bbox accuracy for label {label_str} wrongly guessed: '
+        #       f'{numpy.mean(numpy.array(results_bbox[mode][label_str + "wrong"]))}')
 

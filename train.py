@@ -88,7 +88,7 @@ if __name__ == '__main__':
         for batch in loader:
             # send the inputs and training annotations to the device
             # Part3-3: modify line below to get bbox data
-            images, labels, bbox = [datum.to(config.DEVICE) for datum in batch]
+            images, labels, bboxs = [datum.to(config.DEVICE) for datum in batch]
 
             # perform a forward pass and calculate the training loss
             # Part3-2: modify line below to get bbox data
@@ -100,8 +100,8 @@ if __name__ == '__main__':
             # class_loss = 0
             class_loss = fun.cross_entropy(predict_label, labels, reduction="sum")
             # bbox_loss = 0
-            # bbox_loss = fun.l1_loss(predict_bbox, bbox, reduction='sum')
-            bbox_loss = fun.mse_loss(predict_bbox, bbox, reduction='sum')
+            # bbox_loss = fun.l1_loss(predict_bbox, bboxs, reduction='sum')
+            bbox_loss = fun.mse_loss(predict_bbox, bboxs, reduction='sum')
             batch_loss = config.BBOXW * bbox_loss + config.LABELW * class_loss
 
             # zero out the gradients, perform backprop & update the weights
