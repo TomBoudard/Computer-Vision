@@ -35,7 +35,7 @@ calib = np.array([
 
 # Build 3D grids
 # 3D Grids are of size: resolution x resolution x resolution/2
-resolution = 300
+resolution = 100
 step = 2 / resolution
 
 # Voxel coordinates
@@ -43,7 +43,7 @@ X, Y, Z = np.mgrid[-1:1:step, -1:1:step, -0.5:0.5:step]
 
 # Voxel occupancy
 occupancy = np.ndarray((resolution, resolution, resolution // 2), dtype=int)
-np.mgrid[-1:1:step, -1:1:step, -0.5:0.5:step]
+
 # Voxels are initially occupied then carved with silhouette information
 occupancy.fill(1)
  
@@ -51,7 +51,6 @@ occupancy.fill(1)
 # ---------- MAIN ----------
 if __name__ == "__main__":
     
-    i = 0
     # read the input silhouettes
     for i in range(12):
         myFile = "image{0}.pgm".format(i)
@@ -66,16 +65,15 @@ if __name__ == "__main__":
         for i in range(resolution):
             for j in range(resolution):
                 for k in range(resolution//2):
+                    if occupancy[i][j][k] == 0:
+                        continue
                     x, y, z = X[i, j, k], Y[i, j, k], Z[i, j, k]
                     proj = np.matmul(M, np.array([[x], [y], [z], [1]]))
-                    u = int(proj[0][0]/proj[2][0])
-                    v = int(proj[1][0]/proj[2][0])
+                    u = int(proj[0][0]//proj[2][0])
+                    v = int(proj[1][0]//proj[2][0])
                     if (0 <= u < img.shape[0] and 0 <= v < img.shape[1]):
                         if (img[u][v] == 0):
                             occupancy[i][j][k] = 0
-
-            
-
 
     # Voxel visualization
 
@@ -86,3 +84,4 @@ if __name__ == "__main__":
     surf_mesh = trimesh.Trimesh(verts, faces, validate=True)
     surf_mesh.export('alvoxels.off')
  
+#Positional encoding

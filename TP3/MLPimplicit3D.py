@@ -6,6 +6,7 @@ from skimage import measure
 import torch
 from torch import nn
 import trimesh
+import random as rd
 
 # Camera Calibration for Al's image[1..12].pgm
 calib = np.array([
@@ -41,11 +42,15 @@ BATCH_SIZE = 100
 
 # Build 3D grids
 # 3D Grids are of size resolution x resolution x resolution/2
-resolution = 300
+resolution = 100
 step = 2 / resolution
 
 # Voxel coordinates
 X, Y, Z = np.mgrid[-1:1:step, -1:1:step, -0.5:0.5:step]
+# Random Voxel coordinates
+nb_triplet_train = 500000
+
+
 
 # Voxel occupancy
 occupancy = np.ndarray((resolution, resolution, resolution // 2), dtype=int)
@@ -166,13 +171,59 @@ def binary_acc(y_pred, y_test):
 
 
 def main():
-    # Generate X,Y,Z and occupancy
+    # # Generate X,Y,Z and occupancy
+    # for i in range(12):
+    #     myFile = "image{0}.pgm".format(i)
+    #     print(myFile)
+    #     img = mpimg.imread(myFile)
+    #     if img.dtype == np.float32:  # if not integer
+    #         img = (img * 255).astype(np.uint8)
 
-    # Format data for PyTorch
-    data_in = np.stack((X, Y, Z), axis=-1)
-    resolution_cube = resolution * resolution * resolution
-    data_in = np.reshape(data_in, (resolution_cube // 2, 3))
-    data_out = np.reshape(occupancy, (resolution_cube // 2, 1))
+    #     M = np.reshape(calib[i], (3, 4))
+    #     for i in range(resolution):
+    #         for j in range(resolution):
+    #             for k in range(resolution//2):
+    #                 if occupancy[i][j][k] == 0:
+    #                     continue
+    #                 x, y, z = X[i, j, k], Y[i, j, k], Z[i, j, k]
+    #                 proj = np.matmul(M, np.array([[x], [y], [z], [1]]))
+    #                 u = int(proj[0][0]//proj[2][0])
+    #                 v = int(proj[1][0]//proj[2][0])
+    #                 if (0 <= u < img.shape[0] and 0 <= v < img.shape[1]):
+    #                     if (img[u][v] == 0):
+    #                         occupancy[i][j][k] = 0
+
+    # # Format data for PyTorch
+    # data_in = np.stack((X, Y, Z), axis=-1)
+    # resolution_cube = resolution * resolution * resolution
+    # data_in = np.reshape(data_in, (resolution_cube // 2, 3))
+    # data_out = np.reshape(occupancy, (resolution_cube // 2, 1))
+
+    data_in = np.array([[rd.random()*2-1, rd.random()*2-1, rd.random()-0.5] for _ in range(nb_triplet_train)])
+
+    imageMatrixList = []
+    for i in range(12):
+        myFile = "image{0}.pgm".format(i)
+        img = mpimg.imread(myFile)
+        if img.dtype == np.float32:  # if not integer
+            img = (img * 255).astype(np.uint8)
+
+        M = np.reshape(calib[i], (3, 4))
+        imageMatrixList.append((img, M))
+
+    data_out = []
+    for x, y, z in data_in:
+        for img, M in imageMatrixList:
+            proj = np.matmul(M, np.array([[x], [y], [z], [1]]))
+            u = int(proj[0][0]//proj[2][0])
+            v = int(proj[1][0]//proj[2][0])
+            if (0 <= u < img.shape[0] and 0 <= v < img.shape[1]):
+                if (img[u][v] == 0):
+                    data_out.append([0])
+                    break
+        else:
+            data_out.append([1])
+    data_out = np.array(data_out)
 
     # Pytorch format
     data_in = torch.from_numpy(data_in).to(device)
@@ -181,6 +232,12 @@ def main():
     # Train mlp
     mlp = nif_train(data_in, data_out, BATCH_SIZE)  # data_out.size()[0])
 
+    data_in = np.stack((X, Y, Z), axis=-1)
+    resolution_cube = resolution * resolution * resolution
+    data_in = np.reshape(data_in, (resolution_cube // 2, 3))
+
+    data_in = torch.from_numpy(data_in).to(device)
+
     # Visualization on training data
     outputs = mlp(data_in.float())
     occ = outputs.detach().cpu().numpy()  # from torch format to numpy
@@ -188,6 +245,8 @@ def main():
     # Go back to 3D grid
     newocc = np.reshape(occ, (resolution, resolution, resolution // 2))
     newocc = np.around(newocc)
+
+    print(newocc)
 
     # Marching cubes
     verts, faces, normals, values = measure.marching_cubes(newocc, 0.25)
