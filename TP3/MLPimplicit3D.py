@@ -172,6 +172,7 @@ def binary_acc(y_pred, y_test):
 
 def main():
     # Generate X,Y,Z and occupancy
+    # Regular grid
     for imgId in range(12):
         myFile = "image{0}.pgm".format(imgId)
         print(myFile)
@@ -225,8 +226,8 @@ def main():
 
 
             
-
-    # # data_in = np.array([[rd.random()*2-1, rd.random()*2-1, rd.random()-0.5] for _ in range(nb_triplet_train)])
+    # Random grid
+    # data_in = np.array([[rd.random()*2-1, rd.random()*2-1, rd.random()-0.5] for _ in range(nb_triplet_train)])
 
     # imageMatrixList = []
     # for i in range(12):
