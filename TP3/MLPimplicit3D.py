@@ -48,7 +48,7 @@ step = 2 / resolution
 # Voxel coordinates
 X, Y, Z = np.mgrid[-1:1:step, -1:1:step, -0.5:0.5:step]
 # Random Voxel coordinates
-nb_triplet_train = 500000
+nb_triplet_train = 1000000
 
 
 
@@ -68,15 +68,17 @@ class MLP(nn.Module):
     def __init__(self):
         super().__init__()
         self.layers = nn.Sequential(
-            nn.Linear(3, 60),
+            nn.Linear(3, 120),
             nn.Tanh(),
-            nn.Linear(60, 120),
+            nn.Linear(120, 240),
+            nn.ReLU(),
+            nn.Linear(240, 240),
+            nn.ReLU(),
+            nn.Linear(240, 120),
             nn.ReLU(),
             nn.Linear(120, 60),
             nn.ReLU(),
-            nn.Linear(60, 30),
-            nn.ReLU(),
-            nn.Linear(30, 1),
+            nn.Linear(60, 1),
             # nn.Sigmoid()
         )
 
@@ -199,8 +201,6 @@ def main():
     # data_in = np.reshape(data_in, (resolution_cube // 2, 3))
     # data_out = np.reshape(occupancy, (resolution_cube // 2, 1))
 
-    data_in = np.array([[rd.random()*2-1, rd.random()*2-1, rd.random()-0.5] for _ in range(nb_triplet_train)])
-
     imageMatrixList = []
     for i in range(12):
         myFile = "image{0}.pgm".format(i)
@@ -211,19 +211,38 @@ def main():
         M = np.reshape(calib[i], (3, 4))
         imageMatrixList.append((img, M))
 
+    # data_in = np.array([[rd.random()*2-1, rd.random()*2-1, rd.random()-0.5] for _ in range(nb_triplet_train)])
+    data_in = []
     data_out = []
-    for x, y, z in data_in:
+    cpt_in = 0
+    cpt_out = 0
+    while len(data_in) < nb_triplet_train:
+    # for x, y, z in data_in:
+        x, y, z = rd.random()*2-1, rd.random()*2-1, rd.random()-0.5
         for img, M in imageMatrixList:
             proj = np.matmul(M, np.array([[x], [y], [z], [1]]))
             u = int(proj[0][0]//proj[2][0])
             v = int(proj[1][0]//proj[2][0])
             if (0 <= u < img.shape[0] and 0 <= v < img.shape[1]):
                 if (img[u][v] == 0):
-                    data_out.append([0])
+                    # data_out.append([0])
+                    if (cpt_in < nb_triplet_train // 2):
+                        cpt_in += 1
+                        data_in.append([x, y, z])
+                        data_out.append([0])
                     break
         else:
-            data_out.append([1])
+            # data_out.append([1])
+            if (cpt_out < (nb_triplet_train+1) // 2):
+                cpt_out += 1
+                data_in.append([x, y, z])
+                data_out.append([1])
+
+    data_in = np.array(data_in)
     data_out = np.array(data_out)
+
+    print(data_in.shape)
+    print(data_out.shape)
 
     # Pytorch format
     data_in = torch.from_numpy(data_in).to(device)
@@ -246,7 +265,7 @@ def main():
     newocc = np.reshape(occ, (resolution, resolution, resolution // 2))
     newocc = np.around(newocc)
 
-    print(newocc)
+    # print(newocc)
 
     # Marching cubes
     verts, faces, normals, values = measure.marching_cubes(newocc, 0.25)
