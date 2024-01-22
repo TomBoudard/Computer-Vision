@@ -229,24 +229,6 @@ def main():
 
             
     # Random grid
-    # data_in = np.array([[rd.random()*2-1, rd.random()*2-1, rd.random()-0.5] for _ in range(nb_triplet_train)])
-
-    # imageMatrixList = []
-    # for i in range(12):
-    #     myFile = "image{0}.pgm".format(i)
-    #     img = mpimg.imread(myFile)
-    #     if img.dtype == np.float32:  # if not integer
-    #         img = (img * 255).astype(np.uint8)
-
-    #     M = np.reshape(calib[i], (3, 4))
-    #     imageMatrixList.append((img, M))
-    
-    # # Format data for PyTorch
-    # data_in = np.stack((X, Y, Z), axis=-1)
-    # resolution_cube = resolution * resolution * resolution
-    # data_in = np.reshape(data_in, (resolution_cube // 2, 3))
-    # data_out = np.reshape(occupancy, (resolution_cube // 2, 1))
-
     imageMatrixList = []
     for i in range(12):
         myFile = "image{0}.pgm".format(i)
