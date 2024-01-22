@@ -173,28 +173,84 @@ def binary_acc(y_pred, y_test):
 
 
 def main():
-    # # Generate X,Y,Z and occupancy
+    # Generate X,Y,Z and occupancy
+    for imgId in range(12):
+        myFile = "image{0}.pgm".format(imgId)
+        print(myFile)
+        img = mpimg.imread(myFile)
+        if img.dtype == np.float32:  # if not integer
+            img = (img * 255).astype(np.uint8)
+
+        M = np.reshape(calib[imgId], (3, 4))
+        for i in range(resolution):
+            for j in range(resolution):
+                for k in range(resolution//2):
+                    if occupancy[i][j][k] == 0:
+                        continue
+                    x, y, z = X[i, j, k], Y[i, j, k], Z[i, j, k]
+                    proj = np.matmul(M, np.array([[x], [y], [z], [1]]))
+                    u = int(proj[0][0]//proj[2][0])
+                    v = int(proj[1][0]//proj[2][0])
+                    if (0 <= u < img.shape[0] and 0 <= v < img.shape[1]):
+                        if (img[u][v] == 0):
+                            occupancy[i][j][k] = 0
+
+    # Format data for PyTorch
+    data_in = np.stack((X, Y, Z), axis=-1)
+    resolution_cube = resolution * resolution * resolution
+    data_in = np.reshape(data_in, (resolution_cube // 2, 3))
+    data_out = np.reshape(occupancy, (resolution_cube // 2, 1))
+
+    nbIn, nbOut = 0, 0
+    nbIn = (data_out == 1).sum()
+    nbOut = data_out.shape[0] - nbIn
+
+    print(data_in.shape)
+    print(data_out.shape)
+
+    if nbIn > nbOut:
+        nbPointToDel = nbIn - nbOut
+        for i in range(nbPointToDel):
+            # print(nbPointToDel - i)
+            index = np.argwhere(data_out == np.array([1]))
+            randomIdIndex = rd.randint(0, index.shape[0]-1)
+            randomIndex = index[randomIdIndex][0]
+            # print(randomIndex)
+
+            data_out = np.delete(data_out, randomIndex)
+            data_in = np.delete(data_in, randomIndex)
+    elif nbIn < nbOut:
+        nbPointToDel = nbOut - nbIn
+        for i in range(nbPointToDel):
+            # print(nbPointToDel - i)
+            index = np.argwhere(data_out == np.array([0]))
+            randomIdIndex = rd.randint(0, index.shape[0]-1)
+            randomIndex = index[randomIdIndex][0]
+            # print(randomIndex)
+
+            data_out = np.delete(data_out, randomIndex, axis=0)
+            data_in = np.delete(data_in, randomIndex, axis=0)
+            # print(data_in.shape)
+            # print(data_out.shape)
+
+    nbIn, nbOut = 0, 0
+    nbIn = (data_out == 1).sum()
+    nbOut = data_out.shape[0] - nbIn
+    print("FINI !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", nbIn, nbOut)
+            
+
+    # # data_in = np.array([[rd.random()*2-1, rd.random()*2-1, rd.random()-0.5] for _ in range(nb_triplet_train)])
+
+    # imageMatrixList = []
     # for i in range(12):
     #     myFile = "image{0}.pgm".format(i)
-    #     print(myFile)
     #     img = mpimg.imread(myFile)
     #     if img.dtype == np.float32:  # if not integer
     #         img = (img * 255).astype(np.uint8)
 
     #     M = np.reshape(calib[i], (3, 4))
-    #     for i in range(resolution):
-    #         for j in range(resolution):
-    #             for k in range(resolution//2):
-    #                 if occupancy[i][j][k] == 0:
-    #                     continue
-    #                 x, y, z = X[i, j, k], Y[i, j, k], Z[i, j, k]
-    #                 proj = np.matmul(M, np.array([[x], [y], [z], [1]]))
-    #                 u = int(proj[0][0]//proj[2][0])
-    #                 v = int(proj[1][0]//proj[2][0])
-    #                 if (0 <= u < img.shape[0] and 0 <= v < img.shape[1]):
-    #                     if (img[u][v] == 0):
-    #                         occupancy[i][j][k] = 0
-
+    #     imageMatrixList.append((img, M))
+    
     # # Format data for PyTorch
     # data_in = np.stack((X, Y, Z), axis=-1)
     # resolution_cube = resolution * resolution * resolution
