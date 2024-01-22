@@ -174,6 +174,7 @@ def binary_acc(y_pred, y_test):
 
 def main():
     # Generate X,Y,Z and occupancy
+    # Regular grid
     for imgId in range(12):
         myFile = "image{0}.pgm".format(imgId)
         print(myFile)
@@ -205,41 +206,30 @@ def main():
     nbIn = (data_out == 1).sum()
     nbOut = data_out.shape[0] - nbIn
 
-    print(data_in.shape)
-    print(data_out.shape)
-
     if nbIn > nbOut:
         nbPointToDel = nbIn - nbOut
         for i in range(nbPointToDel):
-            # print(nbPointToDel - i)
             index = np.argwhere(data_out == np.array([1]))
             randomIdIndex = rd.randint(0, index.shape[0]-1)
             randomIndex = index[randomIdIndex][0]
-            # print(randomIndex)
-
-            data_out = np.delete(data_out, randomIndex)
-            data_in = np.delete(data_in, randomIndex)
-    elif nbIn < nbOut:
-        nbPointToDel = nbOut - nbIn
-        for i in range(nbPointToDel):
-            # print(nbPointToDel - i)
-            index = np.argwhere(data_out == np.array([0]))
-            randomIdIndex = rd.randint(0, index.shape[0]-1)
-            randomIndex = index[randomIdIndex][0]
-            # print(randomIndex)
 
             data_out = np.delete(data_out, randomIndex, axis=0)
             data_in = np.delete(data_in, randomIndex, axis=0)
-            # print(data_in.shape)
-            # print(data_out.shape)
+    elif nbIn < nbOut:
+        nbPointToDel = nbOut - nbIn
+        for i in range(nbPointToDel):
+            index = np.argwhere(data_out == np.array([0]))
+            randomIdIndex = rd.randint(0, index.shape[0]-1)
+            randomIndex = index[randomIdIndex][0]
 
-    nbIn, nbOut = 0, 0
-    nbIn = (data_out == 1).sum()
-    nbOut = data_out.shape[0] - nbIn
-    print("FINI !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", nbIn, nbOut)
+            data_out = np.delete(data_out, randomIndex, axis=0)
+            data_in = np.delete(data_in, randomIndex, axis=0)
+
+
+
             
-
-    # # data_in = np.array([[rd.random()*2-1, rd.random()*2-1, rd.random()-0.5] for _ in range(nb_triplet_train)])
+    # Random grid
+    # data_in = np.array([[rd.random()*2-1, rd.random()*2-1, rd.random()-0.5] for _ in range(nb_triplet_train)])
 
     # imageMatrixList = []
     # for i in range(12):
